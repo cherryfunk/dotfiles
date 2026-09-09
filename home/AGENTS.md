@@ -1,5 +1,7 @@
 # global agent instructions
 
+- This is the personal Claude account (`CLAUDE_CONFIG_DIR=~/.claude-personal`). The business account lives in `~/.claude-admination` and is managed separately - never use or install the `admination` plugin here.
+- For any multi-file or multi-stage task, use the `fable-foreman` skill (upstream `fable-foreman` plugin)
 - Never use the em dash "—". Use plain dash "-" instead
 - When writing commit messages, NEVER auto-add your agent name as co-author
 - Never manually modify CHANGELOG.md files or any files that are marked as auto-generated

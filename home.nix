@@ -28,6 +28,22 @@ in
     syntaxHighlighting.enable = true;  # commands turn green when valid
     initContent = ''
       bindkey '^f' autosuggest-accept
+
+      # Two fully separate Claude Code accounts, each in its own config dir.
+      # Bare `claude` is refused so a stray default ~/.claude never gets created.
+      claude-personal()   { CLAUDE_CONFIG_DIR="$HOME/.claude-personal"   command claude "$@"; }
+      claude-admination() { CLAUDE_CONFIG_DIR="$HOME/.claude-admination" command claude "$@"; }
+      claude() {
+        if [ -z "''${CLAUDE_CONFIG_DIR:-}" ]; then
+          echo "Use claude-personal or claude-admination." >&2
+          return 1
+        fi
+        command claude "$@"
+      }
+
+      # Everything else (PATH, aliases, helpers, cheat sheet) lives in the repo
+      # and is sourced from there, so edits apply to new shells without a rebuild.
+      source "${dotfiles}/home/.config/zsh/extra.zsh"
     '';
     shellAliases = {
       ".." = "cd ..";
@@ -60,7 +76,10 @@ in
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/nvim";
   home.file.".config/herdr".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/herdr";
-  home.file.".claude/settings.json".source =
+  # Claude Code: only the personal account (CLAUDE_CONFIG_DIR=~/.claude-personal)
+  # is managed here. The business account in ~/.claude is private and stays
+  # entirely outside this repo.
+  home.file.".claude-personal/settings.json".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.claude/settings.json";
 
   # Keep Pi's credential and runtime state local by linking only authored files and directories.
@@ -73,7 +92,7 @@ in
   home.file.".pi/agent/settings.json".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.pi/agent/settings.json";
 
-  home.file.".claude/CLAUDE.md".source =
+  home.file.".claude-personal/CLAUDE.md".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";
   home.file.".codex/AGENTS.md".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";
